@@ -104,13 +104,13 @@ let nextUsserId = 1;
 io.on("connection", socket => {
 
     socket.on("join-room", (roomId, userId) => {
-      userId = nextUsserId;
-      nextUsserId++;
+    
       console.log(`User: ${userId} joined room: ${roomId}`);
       
       // Ensure the user joins the room
       socket.join(roomId);
-  
+      userId = nextUsserId;
+      nextUsserId++;
     // Broadcast to everyone else in the room (excluding the sender)
       socket.to(roomId).emit("user-connected", userId);
     // socket.broadcast.to(roomId).emit("user-connected", userId);
