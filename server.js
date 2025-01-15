@@ -99,7 +99,7 @@ app.get('/:room', (req, res) =>{
     res.render('room', { roomID: req.params.room});
 })
 
-let nextUsserId = 1;
+// let nextUsserId = 1;
 // [Recive / Listen --> Accept (on)] the 'join-room'(Event)  from the Fronted "script.js"
 io.on("connection", socket => {
 
@@ -109,8 +109,7 @@ io.on("connection", socket => {
       
       // Ensure the user joins the room
       socket.join(roomId);
-      userId = nextUsserId;
-      nextUsserId++;
+
     // Broadcast to everyone else in the room (excluding the sender)
       socket.to(roomId).emit("user-connected", userId);
     // socket.broadcast.to(roomId).emit("user-connected", userId);
