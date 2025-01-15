@@ -1,0 +1,24 @@
+{
+  "name": "meeting_project",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Kaser_Qurashi",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "^5.3.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "jquery": "^3.7.1",
+    "peer": "^1.0.2",
+    "peerjs": "^1.5.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "uuid": "^11.0.5"
+  }
+}
