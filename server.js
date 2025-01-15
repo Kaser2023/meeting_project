@@ -99,11 +99,13 @@ app.get('/:room', (req, res) =>{
     res.render('room', { roomID: req.params.room});
 })
 
-
+let nextUsserId = 1;
 // [Recive / Listen --> Accept (on)] the 'join-room'(Event)  from the Fronted "script.js"
 io.on("connection", socket => {
 
     socket.on("join-room", (roomId, userId) => {
+      userId = nextUsserId;
+      nextUsserId++;
       console.log(`User: ${userId} joined room: ${roomId}`);
       
       // Ensure the user joins the room
