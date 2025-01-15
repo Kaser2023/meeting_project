@@ -133,7 +133,10 @@ function addVideoStream (video, stream) {
     });
 
     // Append the video to the video grid
+    // videoGrid.append(video);
+
     videoGrid.append(video);
+    scrollToBottomVideo(); // Call the scroll function here
 };
 
 
@@ -141,6 +144,11 @@ const scrollToBottom = () => {
     var d = $('.main__chat_window');
     d.scrollTop(d.prop("scrollHeight"));
   }
+
+  const scrollToBottomVideo = () => {
+    const videoGrid = document.getElementById('video-grid');
+    videoGrid.scrollTop = videoGrid.scrollHeight;
+}
 
   
 const muteUnmute = () => {
