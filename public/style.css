@@ -101,3 +101,42 @@
 .unmute, .stop {
     color: #CC3B33;
 }
+
+
+
+
+#connection-status {
+    background-color: #343434; /* Example background color */
+    color: white;             /* Example text color */
+    padding: 5px 10px;       /* Example padding */
+    border-radius: 5px;       /* Example border radius */
+    font-size: 14px;         /* Example font size */
+    margin-bottom: 10px; /* Space below the status */
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+
+#participants-list {  /* Style the participant list */
+    list-style-type: none; /* Remove bullet points */
+    padding: 0;           /* Remove default padding */
+    margin: 0;           /* Remove default margins */
+}
+
+#participants-list li {
+    padding: 5px 10px;
+    color: white;       /* Example text color */
+}
+
+#participants-list li span { /* For the status indicator */
+    margin-left: 5px;
+    font-size: smaller; /*Example*/
+}
+
+
+.main__controls__button.active { /* Styles for the active button */
+    background-color: #555; /* Or any other visual indicator */
+}
