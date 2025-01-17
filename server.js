@@ -250,17 +250,17 @@ io.on('connection', socket => {
                       }
                   });
 
-                  socket.on('message', (message, userName) => {
-                      try {
-                          const timestampUTC = new Date().toISOString();
-                          io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
+                //   socket.on('message', (message, userName) => {
+                //       try {
+                //           const timestampUTC = new Date().toISOString();
+                //           io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
 
-                          console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
+                //           console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
 
-                      } catch (errorMsg) {
-                          console.error(`Error sending message in room ${roomId}:`, errorMsg);
-                      }
-                  });
+                //       } catch (errorMsg) {
+                //           console.error(`Error sending message in room ${roomId}:`, errorMsg);
+                //       }
+                //   });
 
              
          
