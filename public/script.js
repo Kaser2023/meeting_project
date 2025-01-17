@@ -11,6 +11,7 @@ const myVideo = document.createElement('video');
 myVideo.muted = true;
 const peers = {};
 
+
 let userId; // Declare userId here
 let userName; // Declare userName outside getMediaStream
 
@@ -308,6 +309,8 @@ socket.on('error', (error) => {
 socket.on('user-disconnected', userId => {
   if (peers[userId]) {
       peers[userId].close();
+      delete peers[userId]; // Remove the call from the peers object
+
 
       // Optionally remove the username from localStorage
       // localStorage.removeItem(`userName-${ROOM_ID}`); // Or only remove on "Leave Meeting"
@@ -413,8 +416,9 @@ const setPlayVideo = () => {
 
 
 function connectToNewUser(userId, stream) {
+
+    if(!peers[userId]){
   const call = myPeer.call(userId, stream);
-  
   const video = document.createElement('video');
 
   call.on('stream', userVideoStream => {
@@ -431,6 +435,7 @@ function connectToNewUser(userId, stream) {
   });
 
   peers[userId] = call;
+}
 }
 
 
