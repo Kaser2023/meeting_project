@@ -170,9 +170,9 @@ async function shareScreen() {
 }
 
 
-myPeer.on('open', id => {
-  socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
-});
+// myPeer.on('open', id => {
+//   socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
+// });
 
 
 
@@ -180,19 +180,40 @@ myPeer.on('open', id => {
 
 
 
-let roomIdInput = prompt("Enter a room ID:");
-if (!roomIdInput || roomIdInput.trim() === "") {
-    roomIdInput = ROOM_ID;
-}
+// let roomIdInput = prompt("Enter a room ID:");
+// if (!roomIdInput || roomIdInput.trim() === "") {
+//     roomIdInput = ROOM_ID;
+// }
 
 
-let password = prompt('Please enter a password for the room (optional):');
+// let password = prompt('Please enter a password for the room (optional):');
+
+
+// myPeer.on('open', id => {
+//     userId = id;
+//     socket.emit('create-room', roomIdInput, password, id, userName); // Emit create-room
+//     socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
+
+// });
 
 
 myPeer.on('open', id => {
     userId = id;
     socket.emit('create-room', roomIdInput, password, id, userName); // Emit create-room
-});
+    socket.emit('join-room', roomIdInput, id, userName); // Send userName to the server
+  
+  });
+  
+  let roomIdInput = prompt("Enter a room ID:");
+  if (!roomIdInput || roomIdInput.trim() === "") {
+    roomIdInput = ROOM_ID;
+  }
+  
+  
+  let password = prompt('Please enter a password for the room (optional):');
+  
+
+
 
 myPeer.on('error', error => {
   console.error('PeerJS error:', error);
