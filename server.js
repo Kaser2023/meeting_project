@@ -370,5 +370,5 @@ peerServer.on('error', errPeer => { //Error Handling for Peer Server Errors
 
 
 server.listen(process.env.PORT || 3030, () => { //Error Handling for the server listening
-    console.log(`Server is running on port ${process.env.PORT || 3030}`);
+    console.log(`Server is running on port ${process.env.PORT || 3030 || 8080}`);
 });

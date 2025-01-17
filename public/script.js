@@ -108,7 +108,7 @@ async function shareScreen() {
             screenSharingPeer = new Peer(undefined, { // Same config as the video call peer
                 path: '/peerjs',
                 host: '/',
-                port: '3030'
+                port: '443'
             });
 
 
