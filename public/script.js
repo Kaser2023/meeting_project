@@ -48,14 +48,14 @@ async function getMediaStream() { // Make it an async function
 
         myPeer.on('call', call => {
             call.answer(myVideoStream);
-            // const video = document.createElement('video');
+            const video = document.createElement('video');
 
             call.on('stream', userVideoStream => {
-                addVideoStream(myVideo, userVideoStream);
+                addVideoStream(video, userVideoStream);
             });
 
             call.on('close', () => {
-                myVideo.remove();
+                video.remove();
             });
 
             call.on('error', err => {
@@ -414,14 +414,15 @@ const setPlayVideo = () => {
 
 function connectToNewUser(userId, stream) {
   const call = myPeer.call(userId, stream);
-  const video = document.createElement('video');
+
+//   const video = document.createElement('video');
 
   call.on('stream', userVideoStream => {
-      addVideoStream(video, userVideoStream);
+      addVideoStream(myVideo, userVideoStream);
   });
 
   call.on('close', () => {
-      video.remove();
+      myVideo.remove();
   });
 
   call.on('error', err => {
