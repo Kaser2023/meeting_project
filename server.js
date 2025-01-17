@@ -267,9 +267,9 @@ io.on('connection', socket => {
               // Room does not have a password, allow joining
             //   socket.join(roomId);
 
-              if (!users[roomId]) {
-                  users[roomId] = {};
-              }
+            //   if (!users[roomId]) {
+            //       users[roomId] = {};
+            //   }
 
               if (!users[roomId][userId]) {
                   users[roomId][userId] = userName;
