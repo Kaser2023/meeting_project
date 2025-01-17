@@ -175,14 +175,14 @@ async function shareScreen() {
 }
 
 
-// myPeer.on('open', id => {
-//   socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
-// });
+myPeer.on('open', id => {
+  socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
+});
 
 myPeer.on('open', id => {
     userId = id;
     socket.emit('create-room', ROOM_ID, id, userName); // Emit create-room
-    socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
+    // socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
   });
 
 
