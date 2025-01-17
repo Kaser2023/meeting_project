@@ -345,10 +345,10 @@ const scrollToBottom = () => {
 }
 
 
-const scrollToBottomVideo = () => {
-    const videoGrid = document.getElementById('video-grid');
-    videoGrid.scrollTop = videoGrid.scrollHeight;
-}
+// const scrollToBottomVideo = () => {
+//     const videoGrid = document.getElementById('video-grid');
+//     videoGrid.scrollTop = videoGrid.scrollHeight;
+// }
 
 
 const muteUnmute = () => {
@@ -457,7 +457,7 @@ function addVideoStream(video, stream, isScreenSharing = false) { //Add "isScree
   
     videoGrid.append(video);
   
-    scrollToBottomVideo();
+    // scrollToBottomVideo();
   
   }
 
