@@ -3,7 +3,7 @@ const videoGrid = document.getElementById('video-grid');
 const myPeer = new Peer(undefined, {  // Renamed 'peer' to 'myPeer' for clarity
     path: '/peerjs',
     host: '/',
-    port: '3030'
+    port: '443'
 });
 
 let myVideoStream;
