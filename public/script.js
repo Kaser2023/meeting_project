@@ -10,17 +10,14 @@ let myVideoStream;
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 const peers = {};
+
 let userId; // Declare userId here
 let userName; // Declare userName outside getMediaStream
+
 
 let screenSharing = false;  // Flag to track screen sharing status
 let screenSharingStream;    // Variable to store the screen sharing stream
 let screenSharingPeer;      // Separate Peer for screen sharing
-
-
-
-
-
 
 
 // ---Error handling for getUserMedia---
@@ -28,145 +25,153 @@ async function getMediaStream() { // Make it an async function
     try {
 
       const storedUserName = localStorage.getItem(`userName-${ROOM_ID}`);
+
       if (storedUserName) {
           userName = storedUserName;
       } else {
-          userName = prompt('Please enter your name');
-          if (userName) { // Check if the user entered a name
-              localStorage.setItem(`userName-${ROOM_ID}`, userName);
-          } else {
+          userName = prompt('Please enter your name'); // Ask only if not stored.
+          if (userName) {
+              localStorage.setItem(`userName-${ROOM_ID}`, userName); // Store in local storage
+          }
+          else {
             // Handle the case where the user cancels the prompt or enters an empty name
             userName = "Anonymous"; // Or any default name you prefer
           }
-
       }
+      
+        myVideoStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        });
 
-      myVideoStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-    });
-    addVideoStream(myVideo, myVideoStream);
+        addVideoStream(myVideo, myVideoStream);
 
         myPeer.on('call', call => {
-          call.answer(myVideoStream);
-          const video = document.createElement('video');
+            call.answer(myVideoStream);
+            const video = document.createElement('video');
 
-          call.on('stream', userVideoStream => {
-              addVideoStream(video, userVideoStream);
-          });
-          call.on('close', () => {
-              video.remove();
-          });
-          call.on('error', err => {
-              console.error("Error on call:", err);
-              alert("An error occurred during the call: " + err.message);
-          });
+            call.on('stream', userVideoStream => {
+                addVideoStream(video, userVideoStream);
+            });
 
+            call.on('close', () => {
+                video.remove();
+            });
 
-          peers[call.peer] = call;
-      });
+            call.on('error', err => {
+                console.error("Error on call:", err);
+                alert("An error occurred during the call: " + err.message);
+            });
+  
 
+            peers[call.peer] = call; // Use call.peer for consistency
+        });
 
-       
         socket.on('user-connected', userId => {
-          connectToNewUser(userId, myVideoStream);
-      });
+            connectToNewUser(userId, myVideoStream);
+        });
 
-  } catch (error) {
-      console.error("Error accessing media devices:", error);
-      let errorMessage = "Unable to access your camera and microphone.";
-      if (error.name === "NotAllowedError") {
-          errorMessage = "Please grant permission to access your camera and microphone.";
-      } else if (error.name === "NotFoundError") {
-          errorMessage = "No camera or microphone found. Please check your device settings.";
-      } else if (error.message) {
-          errorMessage += " | | " + error.message;
-      }
-      alert(errorMessage);
-  }
+
+    } catch (error) {
+        console.error("Error accessing media devices:", error);
+        // Improved error message with device information if available
+        let errorMessage = "Unable to access your camera and microphone.";
+        if (error.name === "NotAllowedError") {
+            errorMessage = "Please grant permission to access your camera and microphone.";
+        } else if (error.name === "NotFoundError") {
+            errorMessage = "No camera or microphone found. Please check your device settings.";
+        } else if (error.message) {
+            errorMessage += " | | " + error.message; // Add specific error message
+        }
+        alert(errorMessage); // Display a specific error message
+
+    }
 }
+
 getMediaStream(); // Call the function to get media stream
 
 
 
+
+
 async function shareScreen() {
-  if (!screenSharing) {  // Start screen sharing
+    if (!screenSharing) {  // Start screen sharing
 
-      try {
-          screenSharingStream = await navigator.mediaDevices.getDisplayMedia({
-              video: true,
-              audio: true // Include audio if needed
-          });
-
-
-          // Create new Peer connection for screen sharing
-          screenSharingPeer = new Peer(undefined, { // Same config as the video call peer
-              path: '/peerjs',
-              host: '/',
-              port: '3030'
-          });
+        try {
+            screenSharingStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: true // Include audio if needed
+            });
 
 
-          screenSharingPeer.on('open', screenSharingId => {  // Handle successful screen share PeerJS connection
-              socket.emit('screen-share-started', roomIdInput, userId, screenSharingId); // Signal screen share start
-              addVideoStream(myVideo, screenSharingStream, true);  // Add the stream to our video grid (true for screen share)
-          });
-
-          screenSharingPeer.on('call', call => {  // Answer calls when someone else wants to receive the screen sharing stream
-              call.answer(screenSharingStream);
-          });
+            // Create new Peer connection for screen sharing
+            screenSharingPeer = new Peer(undefined, { // Same config as the video call peer
+                path: '/peerjs',
+                host: '/',
+                port: '3030'
+            });
 
 
-          //Listen for screen sharing stop events for other users:
-          socket.on('user-screen-share-stopped', (stoppingUserId) => {
-              if(stoppingUserId in peers){
-                  peers[stoppingUserId].close(); // Close the connection if they stopped sharing.
-              }
+            screenSharingPeer.on('open', screenSharingId => {  // Handle successful screen share PeerJS connection
+                socket.emit('screen-share-started', ROOM_ID, userId, screenSharingId); // Signal screen share start
+                addVideoStream(myVideo, screenSharingStream, true);  // Add the stream to our video grid (true for screen share)
+            });
 
-          });
-
-
-
-
-          socket.on('screen-share-received', (sharingUserId, screenSharingId) => {
-              connectToScreenSharingUser(sharingUserId, screenSharingId, myVideoStream);
-          });
+            screenSharingPeer.on('call', call => {  // Answer calls when someone else wants to receive the screen sharing stream
+                call.answer(screenSharingStream);
+            });
 
 
-          // Function to make a call and receive screen sharing stream:
-          const connectToScreenSharingUser = (sharingUserId, screenSharingId, stream) => {
-              // Call the sharing user with your screenSharingPeer
-              const call = screenSharingPeer.call(screenSharingId, stream);
-              const video = document.createElement('video');
-          
-              call.on('stream', userVideoStream => {
-                addVideoStream(video, userVideoStream);
-              });
-              call.on('close', () => {
-                video.remove();
-              });
-          
-              peers[sharingUserId] = call; // Store the call
-            };
+            //Listen for screen sharing stop events for other users:
+            socket.on('user-screen-share-stopped', (stoppingUserId) => {
+                if(stoppingUserId in peers){
+                    peers[stoppingUserId].close(); // Close the connection if they stopped sharing.
+                }
+
+            });
 
 
-          screenSharing = true; // Update the flag
-
-      } catch (err) {
-          console.error("Error getting screen share stream:", err);
-          alert("Error sharing your screen. Please check your browser settings and permissions.");
-      }
-  } else {
-      // Stop screen sharing
-
-      socket.emit('screen-share-stopped', roomIdInput, userId); // Signal screen share stop
-      screenSharingStream.getTracks().forEach(track => track.stop()); // Stop tracks
-      myVideo.remove(); // Remove video element
-      screenSharingPeer.destroy(); // Close the screen sharing peer connection
 
 
-      screenSharing = false; // Reset the flag
-  }
+            socket.on('screen-share-received', (sharingUserId, screenSharingId) => {
+                connectToScreenSharingUser(sharingUserId, screenSharingId, myVideoStream);
+            });
+
+
+            // Function to make a call and receive screen sharing stream:
+            const connectToScreenSharingUser = (sharingUserId, screenSharingId, stream) => {
+                // Call the sharing user with your screenSharingPeer
+                const call = screenSharingPeer.call(screenSharingId, stream);
+                const video = document.createElement('video');
+            
+                call.on('stream', userVideoStream => {
+                  addVideoStream(video, userVideoStream);
+                });
+                call.on('close', () => {
+                  video.remove();
+                });
+            
+                peers[sharingUserId] = call; // Store the call
+              };
+
+
+            screenSharing = true; // Update the flag
+
+        } catch (err) {
+            console.error("Error getting screen share stream:", err);
+            alert("Error sharing your screen. Please check your browser settings and permissions.");
+        }
+    } else {
+        // Stop screen sharing
+
+        socket.emit('screen-share-stopped', ROOM_ID, userId); // Signal screen share stop
+        screenSharingStream.getTracks().forEach(track => track.stop()); // Stop tracks
+        myVideo.remove(); // Remove video element
+        screenSharingPeer.destroy(); // Close the screen sharing peer connection
+
+
+        screenSharing = false; // Reset the flag
+    }
 }
 
 
@@ -174,58 +179,39 @@ async function shareScreen() {
 //   socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
 // });
 
-
-
-
-
-
-
-// let roomIdInput = prompt("Enter a room ID:");
-// if (!roomIdInput || roomIdInput.trim() === "") {
-//     roomIdInput = ROOM_ID;
-// }
-
-
-// let password = prompt('Please enter a password for the room (optional):');
-
-
-// myPeer.on('open', id => {
-//     userId = id;
-//     socket.emit('create-room', roomIdInput, password, id, userName); // Emit create-room
-//     socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
-
-// });
-
-
 myPeer.on('open', id => {
     userId = id;
-    socket.emit('create-room', roomIdInput, password, id, userName); // Emit create-room
-    socket.emit('join-room', roomIdInput, id, userName); // Send userName to the server
-  
+    socket.emit('create-room', ROOM_ID, id, userName); // Emit create-room
+    socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
   });
-  
-  let roomIdInput = prompt("Enter a room ID:");
-  if (!roomIdInput || roomIdInput.trim() === "") {
-    roomIdInput = ROOM_ID;
-  }
-  
-  
-  let password = prompt('Please enter a password for the room (optional):');
-  
+
+
+
 
 
 
 myPeer.on('error', error => {
-  console.error('PeerJS error:', error);
-  // Handle the error appropriately, e.g., display an error message, retry connection, etc.
-  
-  console.log('A PeerJS error occurred. Please try refreshing the page or check your internet connection. Error Details: ' + error.message);
-  
-  // alert('Please try refreshing the page or check your internet connection. Error Details: ' + error.message);
-  
-  
-  });
-  
+console.error('PeerJS error:', error);
+// Handle the error appropriately, e.g., display an error message, retry connection, etc.
+
+console.log('A PeerJS error occurred. Please try refreshing the page or check your internet connection. Error Details: ' + error.message);
+
+// alert('Please try refreshing the page or check your internet connection. Error Details: ' + error.message);
+
+
+});
+
+
+// Listen for connection errors
+myPeer.on('connection', conn => {
+console.log('New peer connected:', conn.peer); //Log when a new peer connects
+conn.on('error', err => {
+    console.error('Error on peer connection:', err);
+    alert('An error occurred while connecting to a peer: ' + err.message);
+
+
+});
+});
 
 
 // ... (rest of your script.js code - muteUnmute, playStop, scrollToBottom, etc.)
@@ -233,8 +219,6 @@ myPeer.on('error', error => {
 
 
 const connectionStatus = document.getElementById('connection-status'); // Get the element
-// const connectionStatus = document.getElementById('connection-status');
-
 
 socket.on('connect', () => {
     console.log('Connected to Socket.IO server');
@@ -262,26 +246,17 @@ socket.on('disconnect', (reason) => {
   connectionStatus.style.backgroundColor = "red";
 });
 
-socket.on('wrong-password', () => {
-  alert('Incorrect password. Please try again.');
-  window.location.href = '/';
-});
 
-
-// socket.on('user-connected', userId => {
-//   try { //Error Handling for Socket.io User Connection Event
-//       connectToNewUser(userId, myVideoStream);
-//   } catch (error) {
-//       console.error("Error connecting to new user:", error);
-//       alert("Failed to connect to a new user: " + error.message);
-
-//   }
-// });
 
 socket.on('user-connected', userId => {
-  connectToNewUser(userId, myVideoStream); // No need for try-catch here as you're handling errors in connectToNewUser
-});
+  try { //Error Handling for Socket.io User Connection Event
+      connectToNewUser(userId, myVideoStream);
+  } catch (error) {
+      console.error("Error connecting to new user:", error);
+      alert("Failed to connect to a new user: " + error.message);
 
+  }
+});
 
 
 socket.on('reconnecting', (attemptNumber) => { //Add the 'reconnecting event'
@@ -300,7 +275,7 @@ document.querySelector('.leave_meeting').addEventListener('click', () => {
   connectionStatus.style.backgroundColor = "grey";
 
   // Close the tab (or window)
-  // window.close(); // Or use a modal for confirmation 
+  window.close(); // Or use a modal for confirmation 
 });
 
 // ***  beforeunload Event Listener ***
@@ -346,23 +321,23 @@ socket.on('user-disconnected', userId => {
 
 // ----------
 
+
 let text = $('input')
+// let userName = prompt('Please enter your name');  // Get the username
 
 $('html').keydown((e) => {
-    if (e.which == 13 && text.val().length !== 0) {
-        socket.emit('message', text.val(), userName);
-        text.val('');
-    }
+  if (e.which == 13 && text.val().length !== 0) {
+      socket.emit('message', text.val(), userName); // Include userName with the message
+      text.val('');
+  }
 });
 
 socket.on('createMessage', (data) => {
-    const { message, timestampUTC, userName } = data;
-    const timestampLocal = new Date(timestampUTC).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    $("#chat-messages").append(`<li class="message"><b>[${timestampLocal}]  ${userName}:</b><br/>${message}</li>`);
-    scrollToBottom();
+  const { message, timestampUTC, userName } = data;
+  const timestampLocal = new Date(timestampUTC).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  $("#chat-messages").append(`<li class="message"><b>[${timestampLocal}]  ${userName}:</b><br/>${message}</li>`); // Append to #chat-messages
+  scrollToBottom();
 });
-
-
 
 const scrollToBottom = () => {
   var d = $('.main__chat_window'); // The chat window container
@@ -451,9 +426,8 @@ function connectToNewUser(userId, stream) {
 
   call.on('error', err => {
       console.error("Error on call:", err);
-      alert("An error occurred during the call:" + err.message); // More helpful alert
+      alert("An error occurred during the call: " + err.message);
   });
-
 
   peers[userId] = call;
 }
@@ -470,52 +444,64 @@ function connectToNewUser(userId, stream) {
 // }
 
 function addVideoStream(video, stream, isScreenSharing = false) { //Add "isScreenSharing"
-  video.srcObject = stream;
-  video.addEventListener('loadedmetadata', () => {
-      video.play();
-  });
-
-
-  // Add class if it is screen sharing stream:
-  if (isScreenSharing) {
-      video.classList.add('screen-share');
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+        video.play();
+    });
+  
+  
+    // Add class if it is screen sharing stream:
+    if (isScreenSharing) {
+        video.classList.add('screen-share');
+    }
+  
+    videoGrid.append(video);
+  
+    scrollToBottomVideo();
+  
   }
-
-  videoGrid.append(video);
-
-  scrollToBottomVideo();
-
-}
-
-
 
 
 const participantsList = document.getElementById('participants-list');
-const chatHeader = document.getElementById('chat-header');
-const participantsHeader = document.getElementById('participants-header');
+const chatHeader = document.getElementById('chat-header'); //get the element
+const participantsHeader = document.getElementById('participants-header'); //get the element
 
-const chatSection = document.getElementById('chat-section');
-const participantsSection = document.getElementById('participants-section');
+const chatSection = document.getElementById('chat-section'); //get the element
+const participantsSection = document.getElementById('participants-section'); //get the element
 
 
+
+
+// ---------- Chat Toggle --------- //
 chatHeader.addEventListener('click', () => {
     chatSection.style.display = 'block';
     participantsSection.style.display = 'none';
+
 });
 
 
+
+// -------- Participant List Toggle -------- //
 participantsHeader.addEventListener('click', () => {
     participantsSection.style.display = 'block';
     chatSection.style.display = 'none';
+
 });
 
+
+// -------- Update Participant List  -------- //
 
 socket.on('update-participant-list', (participants) => {
-    participantsList.innerHTML = '';
+    participantsList.innerHTML = ''; // Clear the existing list
 
-    participants.forEach(userName => {
+    for (const userId in participants) {
+        const userName = participants[userId];
+      
         const listItem = document.createElement('li');
         listItem.textContent = userName;
+        
         participantsList.appendChild(listItem);
-    });
+         
+    }
 });
+
