@@ -414,15 +414,15 @@ const setPlayVideo = () => {
 
 function connectToNewUser(userId, stream) {
   const call = myPeer.call(userId, stream);
-
-//   const video = document.createElement('video');
+  
+  const video = document.createElement('video');
 
   call.on('stream', userVideoStream => {
-      addVideoStream(myVideo, userVideoStream);
+      addVideoStream(video, userVideoStream);
   });
 
   call.on('close', () => {
-      myVideo.remove();
+      video.remove();
   });
 
   call.on('error', err => {
