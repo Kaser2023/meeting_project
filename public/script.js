@@ -564,26 +564,26 @@ socket.on('user-connected', (userId, userName) => {
 });
 
 // Handle existing users when a new user joins
-socket.on('existing-users', users => {
-    users.forEach(({ userId, userName }) => {
-        console.log(`Adding existing user: ${userName}`);
-        const video = document.createElement('video');
+// socket.on('existing-users', users => {
+//     users.forEach(({ userId, userName }) => {
+//         console.log(`Adding existing user: ${userName}`);
+//         const video = document.createElement('video');
 
-        // Request their video stream
-        const call = myPeer.call(userId, myVideoStream);
-        call.on('stream', userVideoStream => {
-            addVideoStream(video, userVideoStream, userName);
-        });
+//         // Request their video stream
+//         const call = myPeer.call(userId, myVideoStream);
+//         call.on('stream', userVideoStream => {
+//             addVideoStream(video, userVideoStream, userName);
+//         });
 
-        call.on('close', () => {
-            video.remove();
-        });
+//         call.on('close', () => {
+//             video.remove();
+//         });
 
-        call.on('error', err => {
-            console.error(`Error with existing user ${userName}:`, err);
-        });
-    });
-});
+//         call.on('error', err => {
+//             console.error(`Error with existing user ${userName}:`, err);
+//         });
+//     });
+// });
 
 // Notify server of new user
 myPeer.on('open', id => {
