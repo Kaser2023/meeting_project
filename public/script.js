@@ -508,11 +508,11 @@ function addVideoStream(video, stream, userName = "") {
         video.play();
     });
     // Avoid duplication by checking if a video for the user already exists
-    const existingVideo = document.querySelector(`[data-username='${userName}']`);
-    if (existingVideo) {
-        console.warn(`Video for user ${userName} already exists.`);
-        return; // Exit to prevent duplication
-    }
+    // const existingVideo = document.querySelector(`[data-username='${userName}']`);
+    // if (existingVideo) {
+    //     console.warn(`Video for user ${userName} already exists.`);
+    //     return; // Exit to prevent duplication
+    // }
 
 
     // Create a wrapper div for the video and name label
