@@ -176,226 +176,347 @@ app.get('/:room', (req, res) => {
 
 
 
-io.on('connection', socket => {
-  let roomId, userId, userName;
+// io.on('connection', socket => {
+//   let roomId, userId, userName;
 
 
 
-  socket.on('create-room', (_roomId, _userId, _userName) => {  // Correct event name
-      try {
-          roomId = _roomId;
-          userId = _userId;
-          userName = _userName;
-
-
-          socket.join(roomId);
-
-          if (!users[roomId]) {
-              users[roomId] = {};
-          }
-
-          users[roomId][userId] = userName;
-          socket.to(roomId).emit('user-connected', userId);
-          io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-
-
-
-      } catch (createRoomError) {
-          console.error('Error creating room:', createRoomError);
-
-      }
-
-  });
-
-
-
-
-//   socket.on('join-room', (_roomId, _userId, _userName) => {
-//       roomId = _roomId;
-//       userId = _userId;
-//       userName = _userName;
-
-
-
-
+//   socket.on('create-room', (_roomId, _userId, _userName) => {  // Correct event name
 //       try {
+//           roomId = _roomId;
+//           userId = _userId;
+//           userName = _userName;
 
-//           // Check if the room has a password
-//                   // Join the room
-//                   socket.join(roomId);
 
-//                   if (!users[roomId]) {
-//                       users[roomId] = {};
-//                   }
-//                   // Add the user to the room only if not already present
-//                   if (!users[roomId][userId]) {
-//                       users[roomId][userId] = userName;
-//                       socket.to(roomId).emit('user-connected', userId);
-//                       io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+//           socket.join(roomId);
 
-//                   }
+//           if (!users[roomId]) {
+//               users[roomId] = {};
+//           }
 
+//           users[roomId][userId] = userName;
+//           socket.to(roomId).emit('user-connected', userId);
+//           io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
 
 
 
+//       } catch (createRoomError) {
+//           console.error('Error creating room:', createRoomError);
 
-//                   socket.on('disconnect', () => {
-//                       try {
-//                           socket.to(roomId).emit('user-disconnected', userId);
-//                           delete users[roomId][userId];
-//                           io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-
-//                       } catch (errorDisconnect) {
-//                           console.error('Error on disconnect:', errorDisconnect);
-//                       }
-//                   });
-
-//                 //   socket.on('message', (message, userName) => {
-//                 //       try {
-//                 //           const timestampUTC = new Date().toISOString();
-//                 //           io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
-
-//                 //           console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
-
-//                 //       } catch (errorMsg) {
-//                 //           console.error(`Error sending message in room ${roomId}:`, errorMsg);
-//                 //       }
-//                 //   });
-
-             
-         
-//               // Room does not have a password, allow joining
-//             //   socket.join(roomId);
-
-//             //   if (!users[roomId]) {
-//             //       users[roomId] = {};
-//             //   }
-
-//               if (!users[roomId][userId]) {
-//                   users[roomId][userId] = userName;
-//                   socket.to(roomId).emit('user-connected', userId);
-//                   io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-//               }
-
-//               //Set up disconnect and message handlers as before
-//               socket.on('disconnect', () => { // Handle disconnections
-//                   try {
-//                       socket.to(roomId).emit('user-disconnected', userId);
-//                       delete users[roomId][userId];
-//                       io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-
-//                   } catch (errorDisconnect) {
-//                       console.error('Error on disconnect:', errorDisconnect);
-//                   }
-
-//               });
-
-//               socket.on('message', (message, userName) => {
-//                   try {
-//                       const timestampUTC = new Date().toISOString();
-//                       io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
-//                       console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
-
-//                   } catch (errorMsg) {
-//                       console.error(`Error sending message in room ${roomId}:`, errorMsg);
-//                   }
-//               });
-
-
-          
-
-//       } catch (errJoin) {
-//           console.error('Error joining room:', errJoin);
 //       }
 
 //   });
 
-socket.on('join-room', (roomId, userId, userName) => {
-    if (!users[roomId]) {
-        users[roomId] = [];
-    }
 
-    const userExists = users[roomId].some(user => user.userId === userId);
-    if (!userExists) {
-        users[roomId].push({ userId, userName });
-    }
 
-    socket.join(roomId);
 
-    // Notify others in the room about the new user
-    socket.to(roomId).emit('user-connected', userId, userName);
+// //   socket.on('join-room', (_roomId, _userId, _userName) => {
+// //       roomId = _roomId;
+// //       userId = _userId;
+// //       userName = _userName;
 
-    // Send the list of existing users to the new user
-    const existingUsers = users[roomId].filter(user => user.userId !== userId);
-    socket.emit('existing-users', existingUsers);
 
-    // Handle user disconnect
-    socket.on('disconnect', () => {
-        users[roomId] = users[roomId].filter(user => user.userId !== userId);
-        socket.to(roomId).emit('user-disconnected', userId);
-    });
-});
+
+
+// //       try {
+
+// //           // Check if the room has a password
+// //                   // Join the room
+// //                   socket.join(roomId);
+
+// //                   if (!users[roomId]) {
+// //                       users[roomId] = {};
+// //                   }
+// //                   // Add the user to the room only if not already present
+// //                   if (!users[roomId][userId]) {
+// //                       users[roomId][userId] = userName;
+// //                       socket.to(roomId).emit('user-connected', userId);
+// //                       io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+
+// //                   }
+
+
+
+
+
+// //                   socket.on('disconnect', () => {
+// //                       try {
+// //                           socket.to(roomId).emit('user-disconnected', userId);
+// //                           delete users[roomId][userId];
+// //                           io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+
+// //                       } catch (errorDisconnect) {
+// //                           console.error('Error on disconnect:', errorDisconnect);
+// //                       }
+// //                   });
+
+// //                 //   socket.on('message', (message, userName) => {
+// //                 //       try {
+// //                 //           const timestampUTC = new Date().toISOString();
+// //                 //           io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
+
+// //                 //           console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
+
+// //                 //       } catch (errorMsg) {
+// //                 //           console.error(`Error sending message in room ${roomId}:`, errorMsg);
+// //                 //       }
+// //                 //   });
+
+             
+         
+// //               // Room does not have a password, allow joining
+// //             //   socket.join(roomId);
+
+// //             //   if (!users[roomId]) {
+// //             //       users[roomId] = {};
+// //             //   }
+
+// //               if (!users[roomId][userId]) {
+// //                   users[roomId][userId] = userName;
+// //                   socket.to(roomId).emit('user-connected', userId);
+// //                   io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+// //               }
+
+// //               //Set up disconnect and message handlers as before
+// //               socket.on('disconnect', () => { // Handle disconnections
+// //                   try {
+// //                       socket.to(roomId).emit('user-disconnected', userId);
+// //                       delete users[roomId][userId];
+// //                       io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+
+// //                   } catch (errorDisconnect) {
+// //                       console.error('Error on disconnect:', errorDisconnect);
+// //                   }
+
+// //               });
+
+// //               socket.on('message', (message, userName) => {
+// //                   try {
+// //                       const timestampUTC = new Date().toISOString();
+// //                       io.to(roomId).emit('createMessage', { message: message, timestampUTC: timestampUTC, userId: userId, userName: userName });
+// //                       console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
+
+// //                   } catch (errorMsg) {
+// //                       console.error(`Error sending message in room ${roomId}:`, errorMsg);
+// //                   }
+// //               });
+
+
+          
+
+// //       } catch (errJoin) {
+// //           console.error('Error joining room:', errJoin);
+// //       }
+
+// //   });
+
+// socket.on('join-room', (roomId, userId, userName) => {
+//     if (!users[roomId]) {
+//         users[roomId] = [];
+//     }
+
+//     const userExists = users[roomId].some(user => user.userId === userId);
+//     if (!userExists) {
+//         users[roomId].push({ userId, userName });
+//     }
+
+//     socket.join(roomId);
+
+//     // Notify others in the room about the new user
+//     socket.to(roomId).emit('user-connected', userId, userName);
+
+//     // Send the list of existing users to the new user
+//     const existingUsers = users[roomId].filter(user => user.userId !== userId);
+//     socket.emit('existing-users', existingUsers);
+
+//     // Handle user disconnect
+//     socket.on('disconnect', () => {
+//         users[roomId] = users[roomId].filter(user => user.userId !== userId);
+//         socket.to(roomId).emit('user-disconnected', userId);
+//     });
+// });
+//         socket.join(roomId);
+
+//         // Notify others in the room
+//         socket.to(roomId).emit('user-connected', userId, userName);
+
+//         // Send the list of existing users to the new user
+//         socket.emit('existing-users', users[roomId].filter(user => user.userId !== userId));
+
+//         // Handle user disconnect
+//         socket.on('disconnect', () => {
+//             users[roomId] = users[roomId].filter(user => user.userId !== userId);
+//             socket.to(roomId).emit('user-disconnected', userId);
+//         });
+
+
+  
+//   socket.on('screen-share-started', (roomId, userId, screenSharingId) => {  //Add the screen-share-started event handler.
+//     try {
+
+
+//         // Log the event
+//         console.log(`User ${userId} started screen sharing in room ${roomId} with Peer ID ${screenSharingId}`);
+
+//         // Tell everyone else in the room that user started sharing screen:
+//         socket.to(roomId).emit('screen-share-received', userId, screenSharingId);
+
+
+//     } catch (error) {
+//         console.error('Error starting screen sharing in room ${roomId}:', error);
+
+//     }
+
+
+// });
+
+// socket.on('screen-share-stopped', (roomId, userId) => { //Add the screen-share-stopped event handler.
+
+//     try {
+
+//         // Log the event.
+//         console.log(`User ${userId} stopped screen sharing in room ${roomId}`);
+
+//         // Tell everyone else in the room that user stopped sharing screen:
+//         socket.to(roomId).emit('user-screen-share-stopped', userId);
+
+//     } catch (error) {
+//         console.error('Error stopping screen sharing in room ${roomId}:', error);
+//     }
+
+
+
+
+// });
+
+
+
+//   socket.on('error', (errSocket) => {
+//       console.error('Socket.IO error:', errSocket);
+//   });
+
+// });
+
+
+
+
+io.on('connection', socket => {
+    let roomId, userId, userName;
+
+
+    
+  socket.on('create-room', (_roomId, _userId, _userName) => {  // Correct event name
+    try {
+        roomId = _roomId;
+        userId = _userId;
+        userName = _userName;
+
+
         socket.join(roomId);
 
-        // Notify others in the room
+        if (!users[roomId]) {
+            users[roomId] = {};
+        }
+
+        users[roomId][userId] = userName;
+        socket.to(roomId).emit('user-connected', userId);
+        io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+
+
+
+    } catch (createRoomError) {
+        console.error('Error creating room:', createRoomError);
+
+    }
+
+});
+
+
+
+    // Handle joining a room
+    socket.on('join-room', (_roomId, _userId, _userName) => {
+        roomId = _roomId;
+        userId = _userId;
+        userName = _userName;
+
+        if (!users[roomId]) {
+            users[roomId] = [];
+        }
+
+        const userExists = users[roomId].some(user => user.userId === userId);
+        if (!userExists) {
+            users[roomId].push({ userId, userName });
+        }
+
+        socket.join(roomId);
+
+        // Notify others in the room about the new user
         socket.to(roomId).emit('user-connected', userId, userName);
 
         // Send the list of existing users to the new user
-        socket.emit('existing-users', users[roomId].filter(user => user.userId !== userId));
+        const existingUsers = users[roomId].filter(user => user.userId !== userId);
+        socket.emit('existing-users', existingUsers);
 
         // Handle user disconnect
         socket.on('disconnect', () => {
-            users[roomId] = users[roomId].filter(user => user.userId !== userId);
-            socket.to(roomId).emit('user-disconnected', userId);
+            if (users[roomId]) {
+                users[roomId] = users[roomId].filter(user => user.userId !== userId);
+                socket.to(roomId).emit('user-disconnected', userId);
+            }
+        });
+    });
+
+    // Handle screen sharing start
+    socket.on('screen-share-started', (roomId, userId, screenSharingId) => {
+        try {
+            console.log(`User ${userId} started screen sharing in room ${roomId} with Peer ID ${screenSharingId}`);
+            socket.to(roomId).emit('screen-share-received', userId, screenSharingId);
+        } catch (error) {
+            console.error(`Error starting screen sharing in room ${roomId}:`, error);
+        }
+    });
+
+    // Handle screen sharing stop
+    socket.on('screen-share-stopped', (roomId, userId) => {
+        try {
+            console.log(`User ${userId} stopped screen sharing in room ${roomId}`);
+            socket.to(roomId).emit('user-screen-share-stopped', userId);
+        } catch (error) {
+            console.error(`Error stopping screen sharing in room ${roomId}:`, error);
+        }
+    });
+
+    // Handle chat messages
+    socket.on('message', (message, userName) => {
+        try {
+            const timestampUTC = new Date().toISOString();
+            io.to(roomId).emit('createMessage', { message, timestampUTC, userId, userName });
+            console.log(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${userName}: ${message}`);
+        } catch (error) {
+            console.error(`Error sending message in room ${roomId}:`, error);
+        }
+    });
+
+    
+        // Handle user disconnect
+        socket.on('disconnect', () => {
+            if (users[roomId]) {
+                users[roomId] = users[roomId].filter(user => user.userId !== userId);
+                socket.to(roomId).emit('user-disconnected', userId);
+            }
         });
 
-        
-  
-  socket.on('screen-share-started', (roomId, userId, screenSharingId) => {  //Add the screen-share-started event handler.
-    try {
 
-
-        // Log the event
-        console.log(`User ${userId} started screen sharing in room ${roomId} with Peer ID ${screenSharingId}`);
-
-        // Tell everyone else in the room that user started sharing screen:
-        socket.to(roomId).emit('screen-share-received', userId, screenSharingId);
-
-
-    } catch (error) {
-        console.error('Error starting screen sharing in room ${roomId}:', error);
-
-    }
-
-
-});
-
-socket.on('screen-share-stopped', (roomId, userId) => { //Add the screen-share-stopped event handler.
-
-    try {
-
-        // Log the event.
-        console.log(`User ${userId} stopped screen sharing in room ${roomId}`);
-
-        // Tell everyone else in the room that user stopped sharing screen:
-        socket.to(roomId).emit('user-screen-share-stopped', userId);
-
-    } catch (error) {
-        console.error('Error stopping screen sharing in room ${roomId}:', error);
-    }
-
-
-
-
+    // Handle general errors
+    socket.on('error', err => {
+        console.error('Socket.IO error:', err);
+    });
 });
 
 
 
-  socket.on('error', (errSocket) => {
-      console.error('Socket.IO error:', errSocket);
-  });
 
-});
+
 
 peerServer.on('error', errPeer => { //Error Handling for Peer Server Errors
     console.error('PeerJS Server error:', errPeer);

@@ -184,9 +184,9 @@ async function shareScreen() {
 }
 
 
-myPeer.on('open', id => {
-  socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
-});
+// myPeer.on('open', id => {
+//   socket.emit('join-room', ROOM_ID, id, userName); // Send userName to the server
+// });
 
 // myPeer.on('open', id => {
 //     userId = id;
@@ -257,15 +257,15 @@ socket.on('disconnect', (reason) => {
 
 
 
-// socket.on('user-connected', userId => {
-//   try { //Error Handling for Socket.io User Connection Event
-//       connectToNewUser(userId, myVideoStream);
-//   } catch (error) {
-//       console.error("Error connecting to new user:", error);
-//       alert("Failed to connect to a new user: " + error.message);
+socket.on('user-connected', userId => {
+  try { //Error Handling for Socket.io User Connection Event
+      connectToNewUser(userId, myVideoStream);
+  } catch (error) {
+      console.error("Error connecting to new user:", error);
+      alert("Failed to connect to a new user: " + error.message);
 
-//   }
-// });
+  }
+});
 
 
 socket.on('reconnecting', (attemptNumber) => { //Add the 'reconnecting event'
@@ -435,55 +435,7 @@ function connectToNewUser(userId, stream) {
 
   });
 
-// Add user name display functionality
-// function addVideoStream(video, stream, userName = "") {
-    function addVideoStream(video, stream, userName = "",  isScreenSharing = false) {
-
-    // Avoid duplication by checking if a video for the user already exists
-    const existingVideo = document.querySelector(`[data-username='${userName}']`);
-    if (existingVideo) {
-        console.warn(`Video for user ${userName} already exists.`);
-        return; // Exit to prevent duplication
-    }
-
-
-
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play();
-    });
-
-
-          // Add class if it is screen sharing stream:
-       if (isScreenSharing) {
-        video.classList.add('screen-share');
-    }
-
-    // Create a wrapper div for the video and name label
-    const videoWrapper = document.createElement('div');
-    videoWrapper.style.position = "relative";
-    videoWrapper.style.display = "inline-block";
-    videoWrapper.setAttribute('data-username', userName); // Add an identifier for the user
-
-    // Create a label to display the user's name
-    const nameLabel = document.createElement('div');
-    nameLabel.textContent = userName;
-    nameLabel.style.position = "absolute";
-    nameLabel.style.top = "5px";
-    nameLabel.style.left = "5px";
-    nameLabel.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    nameLabel.style.color = "white";
-    nameLabel.style.padding = "2px 5px";
-    nameLabel.style.borderRadius = "5px";
-    nameLabel.style.fontSize = "12px";
-
-    // Append the video and name label to the wrapper
-    videoWrapper.appendChild(video);
-    videoWrapper.appendChild(nameLabel);
-
-    // Append the wrapper to the video grid
-    videoGrid.append(videoWrapper);
-}  call.on('close', () => {
+  call.on('close', () => {
       video.remove();
   });
 
@@ -546,51 +498,47 @@ function connectToNewUser(userId, stream) {
     
 // }
 
-// // Add user name display functionality
-// function addVideoStream(video, stream, userName = "") {
-//     // Avoid duplication by checking if a video for the user already exists
-//     const existingVideo = document.querySelector(`[data-username='${userName}']`);
-//     if (existingVideo) {
-//         console.warn(`Video for user ${userName} already exists.`);
-//         return; // Exit to prevent duplication
-//     }
-
-//     video.srcObject = stream;
-//     video.addEventListener('loadedmetadata', () => {
-//         video.play();
-//     });
-
-//     // Create a wrapper div for the video and name label
-//     const videoWrapper = document.createElement('div');
-//     videoWrapper.style.position = "relative";
-//     videoWrapper.style.display = "inline-block";
-//     videoWrapper.setAttribute('data-username', userName); // Add an identifier for the user
-
-//     // Create a label to display the user's name
-//     const nameLabel = document.createElement('div');
-//     nameLabel.textContent = userName;
-//     nameLabel.style.position = "absolute";
-//     nameLabel.style.top = "5px";
-//     nameLabel.style.left = "5px";
-//     nameLabel.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-//     nameLabel.style.color = "white";
-//     nameLabel.style.padding = "2px 5px";
-//     nameLabel.style.borderRadius = "5px";
-//     nameLabel.style.fontSize = "12px";
-
-//     // Append the video and name label to the wrapper
-//     videoWrapper.appendChild(video);
-//     videoWrapper.appendChild(nameLabel);
-
-//     // Append the wrapper to the video grid
-//     videoGrid.append(videoWrapper);
-// }
 
 
+// Add user name display functionality
+function addVideoStream(video, stream, userName = "") {
+    // Avoid duplication by checking if a video for the user already exists
+    const existingVideo = document.querySelector(`[data-username='${userName}']`);
+    if (existingVideo) {
+        console.warn(`Video for user ${userName} already exists.`);
+        return; // Exit to prevent duplication
+    }
 
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+        video.play();
+    });
 
+    // Create a wrapper div for the video and name label
+    const videoWrapper = document.createElement('div');
+    videoWrapper.style.position = "relative";
+    videoWrapper.style.display = "inline-block";
+    videoWrapper.setAttribute('data-username', userName); // Add an identifier for the user
 
+    // Create a label to display the user's name
+    const nameLabel = document.createElement('div');
+    nameLabel.textContent = userName;
+    nameLabel.style.position = "absolute";
+    nameLabel.style.top = "5px";
+    nameLabel.style.left = "5px";
+    nameLabel.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    nameLabel.style.color = "white";
+    nameLabel.style.padding = "2px 5px";
+    nameLabel.style.borderRadius = "5px";
+    nameLabel.style.fontSize = "12px";
 
+    // Append the video and name label to the wrapper
+    videoWrapper.appendChild(video);
+    videoWrapper.appendChild(nameLabel);
+
+    // Append the wrapper to the video grid
+    videoGrid.append(videoWrapper);
+}
 
 // Handle new user connection
 socket.on('user-connected', (userId, userName) => {
