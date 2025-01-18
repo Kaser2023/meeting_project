@@ -502,6 +502,11 @@ function connectToNewUser(userId, stream) {
 
 // Add user name display functionality
 function addVideoStream(video, stream, userName = "") {
+    
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+        video.play();
+    });
     // Avoid duplication by checking if a video for the user already exists
     const existingVideo = document.querySelector(`[data-username='${userName}']`);
     if (existingVideo) {
@@ -509,10 +514,6 @@ function addVideoStream(video, stream, userName = "") {
         return; // Exit to prevent duplication
     }
 
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play();
-    });
 
     // Create a wrapper div for the video and name label
     const videoWrapper = document.createElement('div');
