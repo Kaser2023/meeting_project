@@ -72,7 +72,8 @@ async function getMediaStream() { // Make it an async function
             peers[call.peer] = call; // Use call.peer for consistency
         });
 
-        socket.on('user-connected', userId => {
+        // socket.on('user-connected', userId => {
+        socket.on('user-connected', (userId, userName) => {
             connectToNewUser(userId, myVideoStream);
         });
 
