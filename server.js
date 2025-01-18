@@ -453,16 +453,16 @@ io.on('connection', socket => {
         socket.to(roomId).emit('user-connected', userId, userName);
 
         // Send the list of existing users to the new user
-        const existingUsers = users[roomId].filter(user => user.userId !== userId);
-        socket.emit('existing-users', existingUsers);
+        // const existingUsers = users[roomId].filter(user => user.userId !== userId);
+        // socket.emit('existing-users', existingUsers);
 
-        // if (!users[roomId][userId]) {
+        if (!users[roomId][userId]) {
             users[roomId][userId] = userName;
             socket.to(roomId).emit('user-connected', userId);
             // io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
             io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
 
-        // }
+        }
 
         // Handle user disconnect
         // socket.on('disconnect', () => {
