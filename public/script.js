@@ -621,17 +621,32 @@ participantsHeader.addEventListener('click', () => {
 
 // -------- Update Participant List  -------- //
 
+// socket.on('update-participant-list', (participants) => {
+//     participantsList.innerHTML = ''; // Clear the existing list
+
+//     for (const userId in participants) {
+//         const userName = participants[userId];
+      
+//         const listItem = document.createElement('li');
+//         listItem.textContent = userName;
+        
+//         participantsList.appendChild(listItem);
+         
+//     }
+// });
+
+
 socket.on('update-participant-list', (participants) => {
     participantsList.innerHTML = ''; // Clear the existing list
 
     for (const userId in participants) {
-        const userName = participants[userId];
-      
+        const userName = typeof participants[userId] === 'object' 
+            ? participants[userId].userName 
+            : participants[userId];
+
         const listItem = document.createElement('li');
         listItem.textContent = userName;
-        
+
         participantsList.appendChild(listItem);
-         
     }
 });
-
