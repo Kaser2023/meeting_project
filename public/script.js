@@ -436,7 +436,9 @@ function connectToNewUser(userId, stream) {
   });
 
 // Add user name display functionality
-function addVideoStream(video, stream, userName = "") {
+// function addVideoStream(video, stream, userName = "") {
+    function addVideoStream(video, stream, userName = "",  isScreenSharing = false) {
+
     // Avoid duplication by checking if a video for the user already exists
     const existingVideo = document.querySelector(`[data-username='${userName}']`);
     if (existingVideo) {
@@ -444,10 +446,18 @@ function addVideoStream(video, stream, userName = "") {
         return; // Exit to prevent duplication
     }
 
+
+
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play();
     });
+
+
+          // Add class if it is screen sharing stream:
+       if (isScreenSharing) {
+        video.classList.add('screen-share');
+    }
 
     // Create a wrapper div for the video and name label
     const videoWrapper = document.createElement('div');
