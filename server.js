@@ -421,8 +421,7 @@ io.on('connection', socket => {
         users[roomId][userId] = userName;
         socket.to(roomId).emit('user-connected', userId);
         io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-
-
+        //io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
 
     } catch (createRoomError) {
         console.error('Error creating room:', createRoomError);
@@ -457,13 +456,35 @@ io.on('connection', socket => {
         const existingUsers = users[roomId].filter(user => user.userId !== userId);
         socket.emit('existing-users', existingUsers);
 
+        if (!users[roomId][userId]) {
+            users[roomId][userId] = userName;
+            socket.to(roomId).emit('user-connected', userId);
+            io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+        }
+
         // Handle user disconnect
-        socket.on('disconnect', () => {
-            if (users[roomId]) {
-                users[roomId] = users[roomId].filter(user => user.userId !== userId);
+        // socket.on('disconnect', () => {
+        //     if (users[roomId]) {
+        //         users[roomId] = users[roomId].filter(user => user.userId !== userId);
+        //         socket.to(roomId).emit('user-disconnected', userId);
+        //     }
+        // });
+
+        //Set up disconnect and message handlers as before
+        socket.on('disconnect', () => { // Handle disconnections
+            try {
                 socket.to(roomId).emit('user-disconnected', userId);
+                delete users[roomId][userId];
+                io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+
+            } catch (errorDisconnect) {
+                console.error('Error on disconnect:', errorDisconnect);
             }
+
         });
+
+
+
     });
 
     // Handle screen sharing start

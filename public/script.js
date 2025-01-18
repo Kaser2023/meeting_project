@@ -606,7 +606,6 @@ const participantsSection = document.getElementById('participants-section'); //g
 chatHeader.addEventListener('click', () => {
     chatSection.style.display = 'block';
     participantsSection.style.display = 'none';
-
 });
 
 

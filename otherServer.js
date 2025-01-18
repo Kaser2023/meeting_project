@@ -171,8 +171,6 @@ io.on('connection', socket => {
   
   socket.on('screen-share-started', (roomId, userId, screenSharingId) => {  //Add the screen-share-started event handler.
     try {
-
-
         // Log the event
         console.log(`User ${userId} started screen sharing in room ${roomId} with Peer ID ${screenSharingId}`);
 
@@ -189,7 +187,6 @@ io.on('connection', socket => {
 });
 
 socket.on('screen-share-stopped', (roomId, userId) => { //Add the screen-share-stopped event handler.
-
     try {
 
         // Log the event.
@@ -201,13 +198,7 @@ socket.on('screen-share-stopped', (roomId, userId) => { //Add the screen-share-s
     } catch (error) {
         console.error('Error stopping screen sharing in room ${roomId}:', error);
     }
-
-
-
-
 });
-
-
 
   socket.on('error', (errSocket) => {
       console.error('Socket.IO error:', errSocket);
