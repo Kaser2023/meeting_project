@@ -45,14 +45,18 @@ async function getMediaStream() { // Make it an async function
             audio: true
         });
 
-        addVideoStream(myVideo, myVideoStream);
+        // addVideoStream(myVideo, myVideoStream);
+        addVideoStream(myVideo, myVideoStream, userName);
+
 
         myPeer.on('call', call => {
             call.answer(myVideoStream);
             const video = document.createElement('video');
 
             call.on('stream', userVideoStream => {
-                addVideoStream(video, userVideoStream);
+                // addVideoStream(video, userVideoStream);
+                addVideoStream(video, userVideoStream, userName);
+
             });
 
             call.on('close', () => {
@@ -115,7 +119,9 @@ async function shareScreen() {
 
             screenSharingPeer.on('open', screenSharingId => {  // Handle successful screen share PeerJS connection
                 socket.emit('screen-share-started', ROOM_ID, userId, screenSharingId); // Signal screen share start
-                addVideoStream(myVideo, screenSharingStream, true);  // Add the stream to our video grid (true for screen share)
+                // addVideoStream(myVideo, screenSharingStream, true);  // Add the stream to our video grid (true for screen share)
+                addVideoStream(myVideo, screenSharingStream, userName, true);
+
             });
 
             screenSharingPeer.on('call', call => {  // Answer calls when someone else wants to receive the screen sharing stream
@@ -146,7 +152,9 @@ async function shareScreen() {
                 const video = document.createElement('video');
             
                 call.on('stream', userVideoStream => {
-                  addVideoStream(video, userVideoStream);
+                //   addVideoStream(video, userVideoStream);
+                  addVideoStream(video, userVideoStream, userName);
+
                 });
                 call.on('close', () => {
                   video.remove();
@@ -422,7 +430,9 @@ function connectToNewUser(userId, stream) {
   const video = document.createElement('video');
 
   call.on('stream', userVideoStream => {
-      addVideoStream(video, userVideoStream);
+    //   addVideoStream(video, userVideoStream);
+      addVideoStream(video, userVideoStream, userName);
+
   });
 
   call.on('close', () => {
@@ -449,11 +459,16 @@ function connectToNewUser(userId, stream) {
 //     scrollToBottomVideo();
 // }
 
-function addVideoStream(video, stream, userName = "") {
+function addVideoStream(video, stream, userName = "",  isScreenSharing = false) {
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play();
     });
+
+       // Add class if it is screen sharing stream:
+       if (isScreenSharing) {
+        video.classList.add('screen-share');
+    }
 
     // Create a wrapper div for the video and name label
     const videoWrapper = document.createElement('div');
