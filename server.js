@@ -486,27 +486,6 @@ io.on('connection', socket => {
         });
 
 
-        
-        if (!users[roomId][userId]) {
-            users[roomId][userId] = userName;
-            socket.to(roomId).emit('user-connected', userId);
-            io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-        }
-
-        //Set up disconnect and message handlers as before
-        socket.on('disconnect', () => { // Handle disconnections
-            try {
-                socket.to(roomId).emit('user-disconnected', userId);
-                delete users[roomId][userId];
-                io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
-
-            } catch (errorDisconnect) {
-                console.error('Error on disconnect:', errorDisconnect);
-            }
-
-        });
-
-
 
     });
 
