@@ -450,7 +450,7 @@ io.on('connection', socket => {
         socket.join(roomId);
 
         // Notify others in the room about the new user
-        socket.to(roomId).emit('user-connected', userId, userName);
+        // socket.to(roomId).emit('user-connected', userId, userName);
 
         // Send the list of existing users to the new user
         const existingUsers = users[roomId].filter(user => user.userId !== userId);
@@ -458,7 +458,9 @@ io.on('connection', socket => {
 
         if (!users[roomId][userId]) {
             users[roomId][userId] = userName;
-            socket.to(roomId).emit('user-connected', userId);
+            // socket.to(roomId).emit('user-connected', userId);
+            socket.to(roomId).emit('user-connected', userId, userName);
+
             // io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
             io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
 
