@@ -492,7 +492,7 @@ function addVideoStream(video, stream, userName = "",  isScreenSharing = false) 
     videoWrapper.appendChild(nameLabel);
 
     // Append the wrapper to the video grid
-    // videoGrid.append(videoWrapper);
+    videoGrid.append(videoWrapper);
     // videoWrapper.append(videoWrapper);
 
     
