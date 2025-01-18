@@ -636,17 +636,38 @@ participantsHeader.addEventListener('click', () => {
 // });
 
 
+// socket.on('update-participant-list', (participants) => {
+//     participantsList.innerHTML = ''; // Clear the existing list
+
+//     for (const userId in participants) {
+//         const userName = typeof participants[userId] === 'object' 
+//             ? participants[userId].userName 
+//             : participants[userId];
+
+//         const listItem = document.createElement('li');
+//         listItem.textContent = userName;
+
+//         participantsList.appendChild(listItem);
+//     }
+// });
+
 socket.on('update-participant-list', (participants) => {
+    const existingNames = new Set();
     participantsList.innerHTML = ''; // Clear the existing list
 
     for (const userId in participants) {
-        const userName = typeof participants[userId] === 'object' 
-            ? participants[userId].userName 
+        const userName = typeof participants[userId] === 'object'
+            ? participants[userId].userName
             : participants[userId];
 
-        const listItem = document.createElement('li');
-        listItem.textContent = userName;
+        if (!existingNames.has(userName)) {
+            existingNames.add(userName);
 
-        participantsList.appendChild(listItem);
+            const listItem = document.createElement('li');
+            listItem.textContent = userName;
+
+            participantsList.appendChild(listItem);
+        }
     }
 });
+
