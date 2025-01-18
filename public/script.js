@@ -257,15 +257,15 @@ socket.on('disconnect', (reason) => {
 
 
 
-socket.on('user-connected', userId => {
-  try { //Error Handling for Socket.io User Connection Event
-      connectToNewUser(userId, myVideoStream);
-  } catch (error) {
-      console.error("Error connecting to new user:", error);
-      alert("Failed to connect to a new user: " + error.message);
+// socket.on('user-connected', userId => {
+//   try { //Error Handling for Socket.io User Connection Event
+//       connectToNewUser(userId, myVideoStream);
+//   } catch (error) {
+//       console.error("Error connecting to new user:", error);
+//       alert("Failed to connect to a new user: " + error.message);
 
-  }
-});
+//   }
+// });
 
 
 socket.on('reconnecting', (attemptNumber) => { //Add the 'reconnecting event'
