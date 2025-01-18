@@ -449,24 +449,36 @@ function connectToNewUser(userId, stream) {
 //     scrollToBottomVideo();
 // }
 
-function addVideoStream(video, stream, isScreenSharing = false) { //Add "isScreenSharing"
+function addVideoStream(video, stream, userName = "") {
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play();
     });
-  
-  
-    // Add class if it is screen sharing stream:
-    if (isScreenSharing) {
-        video.classList.add('screen-share');
-    }
-  
-    videoGrid.append(video);
-  
-    // scrollToBottomVideo();
-  
-  }
 
+    // Create a wrapper div for the video and name label
+    const videoWrapper = document.createElement('div');
+    videoWrapper.style.position = "relative";
+    videoWrapper.style.display = "inline-block";
+
+    // Create a label to display the user's name
+    const nameLabel = document.createElement('div');
+    nameLabel.textContent = userName;
+    nameLabel.style.position = "absolute";
+    nameLabel.style.top = "5px";
+    nameLabel.style.left = "5px";
+    nameLabel.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    nameLabel.style.color = "white";
+    nameLabel.style.padding = "2px 5px";
+    nameLabel.style.borderRadius = "5px";
+    nameLabel.style.fontSize = "12px";
+
+    // Append the video and name label to the wrapper
+    videoWrapper.appendChild(video);
+    videoWrapper.appendChild(nameLabel);
+
+    // Append the wrapper to the video grid
+    videoGrid.append(videoWrapper);
+}
 
 const participantsList = document.getElementById('participants-list');
 const chatHeader = document.getElementById('chat-header'); //get the element
