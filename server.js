@@ -420,7 +420,7 @@ io.on('connection', socket => {
 
         users[roomId][userId] = userName;
         socket.to(roomId).emit('user-connected', userId);
-        // io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+        io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
         //io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
 
     } catch (createRoomError) {
@@ -459,7 +459,9 @@ io.on('connection', socket => {
         if (!users[roomId][userId]) {
             users[roomId][userId] = userName;
             socket.to(roomId).emit('user-connected', userId);
-            io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+            // io.to(roomId).emit('update-participant-list', Object.values(users[roomId]));
+            io.to(roomId).emit('update-participant-list', users[roomId]);
+
         }
 
         // Handle user disconnect
