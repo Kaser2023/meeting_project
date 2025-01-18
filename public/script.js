@@ -362,7 +362,7 @@ const scrollToBottom = () => {
 // }
 
 
-const muteUnmute = () => {
+function muteUnmute  () {
     const enabled = myVideoStream.getAudioTracks()[0].enabled;
     if (enabled) {
         myVideoStream.getAudioTracks()[0].enabled = false;
@@ -374,7 +374,7 @@ const muteUnmute = () => {
 }
 
 
-const setMuteButton = () => {
+function setMuteButton() {
     const html = `
       <i class="bi bi-mic-fill"></i>
       <span>Mute</span>
@@ -382,7 +382,7 @@ const setMuteButton = () => {
     document.querySelector('.main__mute_button').innerHTML = html;
 }
 
-const setUnmuteButton = () => {
+function setUnmuteButton () {
     const html = `
       <i class="unmute bi bi-mic-mute-fill"></i>
       <span>Unmute</span>
@@ -391,7 +391,7 @@ const setUnmuteButton = () => {
 }
 
 
-const playStop = () => {
+function playStop () {
     console.log('object')
     let enabled = myVideoStream.getVideoTracks()[0].enabled;
     if (enabled) {
@@ -403,7 +403,7 @@ const playStop = () => {
     }
 }
 
-const setStopVideo = () => {
+function setStopVideo  () {
     const html = `
       <i class="bi bi-camera-video-fill"></i>
       <span>Stop Video</span>
@@ -411,7 +411,7 @@ const setStopVideo = () => {
     document.querySelector('.main__video_button').innerHTML = html;
 }
 
-const setPlayVideo = () => {
+ function setPlayVideo  () {
     const html = `
     <i class="stop bi bi-camera-video-off-fill"></i>
       <span>Play Video</span>
