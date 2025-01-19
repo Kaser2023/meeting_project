@@ -531,6 +531,19 @@ io.on('connection', socket => {
             }
         });
 
+    //     const participants = {};
+
+    // socket.on('join', (userName) => {
+    //     participants[socket.id] = userName;
+    //     io.emit('update-participant-list', participants);
+    // });
+
+    // socket.on('disconnect', () => {
+    //     delete participants[socket.id];
+    //     io.emit('update-participant-list', participants);
+    // });
+
+
 
     // Handle general errors
     socket.on('error', err => {
@@ -549,17 +562,6 @@ peerServer.on('error', errPeer => { //Error Handling for Peer Server Errors
 });
 
 
-const participants = {};
-
-socket.on('join', (userName) => {
-    participants[socket.id] = userName;
-    io.emit('update-participant-list', participants);
-});
-
-socket.on('disconnect', () => {
-    delete participants[socket.id];
-    io.emit('update-participant-list', participants);
-});
 
 
 
