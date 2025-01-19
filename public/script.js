@@ -652,6 +652,8 @@ participantsHeader.addEventListener('click', () => {
 // });
 
 socket.on('update-participant-list', (participants) => {
+    console.log('Participants:', participants); // Debugging
+
     const existingNames = new Set();
     participantsList.innerHTML = ''; // Clear the existing list
 

@@ -450,7 +450,7 @@ io.on('connection', socket => {
         socket.join(roomId);
 
         // Notify others in the room about the new user
-        // socket.to(roomId).emit('user-connected', userId, userName);
+        socket.to(roomId).emit('user-connected', userId, userName);
 
         // Send the list of existing users to the new user
         const existingUsers = users[roomId].filter(user => user.userId !== userId);
@@ -548,6 +548,18 @@ peerServer.on('error', errPeer => { //Error Handling for Peer Server Errors
 
 });
 
+
+const participants = {};
+
+socket.on('join', (userName) => {
+    participants[socket.id] = userName;
+    io.emit('update-participant-list', participants);
+});
+
+socket.on('disconnect', () => {
+    delete participants[socket.id];
+    io.emit('update-participant-list', participants);
+});
 
 
 
