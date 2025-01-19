@@ -96,6 +96,8 @@ socket.on('message', message => {
     3.  Handle screen sharing streams similar to video streams.
 
 **6. Scalability (Backend - Significant Changes)**
+    **Scalability: The current implementation might not scale well for a large number of participants in a single room due to the peer-to-peer nature. Consider using a Selective Forwarding Unit (SFU) or Multipoint Conferencing Unit (MCU) for larger-scale deployments.
+
 
 *   **Algorithm (Using an SFU - Conceptual):**
     1.  Choose a suitable SFU (e.g., Mediasoup, Jitsi Videobridge).
